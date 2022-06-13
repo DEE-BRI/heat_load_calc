@@ -10,6 +10,7 @@
 .. toctree::
    :maxdepth: 2
 
+   /contents/spec
    /contents/notes
    /contents/core_main
    /contents/heat_balance
