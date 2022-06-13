@@ -510,7 +510,7 @@ II. 根拠
             &+ \pmb{\phi}_{T0} \cdot \pmb{k}'_{EI} \cdot \pmb{h}_{i}^{-1} \cdot \pmb{RS}_{n+1} \\
             &+ \pmb{\phi}_{T0} \cdot \pmb{k}'_{EI} \cdot \pmb{h}_{i}^{-1} \cdot \pmb{A}^{-1} \cdot \pmb{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{Lr}_{n+1} \\
             &+ \pmb{\phi}_{T0} \cdot \pmb{k}_{EO} \cdot \theta_{EO,n+1} \\
-            &+ \sum_{m=1}^{M}{\pmb{\theta}'_{S,A,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{S,T,m,n+1}} \\
+            &+ \sum_{m=1}^{M}{\pmb{\theta}'_{S,A,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{S,T,m,n+1}}
         \end{split}
         \tag{b16}
     \end{align*}
@@ -534,7 +534,7 @@ II. 根拠
             + \pmb{\phi}_{T0} \cdot \pmb{k}_{EO} \cdot \theta_{EO,n+1} \\
             &+ \pmb{\phi}_{A0} \cdot \pmb{A}^{-1} \cdot \pmb{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{Lr}_{n+1} \\
             &+ \pmb{\phi}_{T0} \cdot \pmb{k}'_{EI} \cdot \pmb{A}^{-1} \cdot \pmb{h}_{i}^{-1} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{flr} \cdot \pmb{Lr}_{n+1} \\
-            &+ \sum_{m=1}^{M}{\pmb{\theta}'_{S,A,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{S,T,m,n+1}} \\
+            &+ \sum_{m=1}^{M}{\pmb{\theta}'_{S,A,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{S,T,m,n+1}}
         \end{split}
         \tag{b17}
     \end{align*}
