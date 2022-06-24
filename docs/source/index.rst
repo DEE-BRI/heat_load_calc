@@ -8,19 +8,17 @@
 ############################
 
 .. toctree::
-   :maxdepth: 2
 
-   /contents/spec
-   /contents/notes
-   /contents/core_main
-   /contents/heat_balance
-   /contents/humidity_balance
-   /contents/furniture
-   /contents/period
-   /contents/external_boundaries_direction
-   /contents/solar_position
-   /contents/shape_factor
-   /contents/infiltration
-   /contents/inclined_surface_solar_radiation
-   /contents/solar_shading
+    /contents/introduction_
+    /contents/spec_
+    /contents/eval_
+    /contents/basis_
+    /contents/humidity_balance
+    /contents/furniture
+    /contents/period
+    /contents/external_boundaries_direction
+    /contents/shape_factor
+    /contents/infiltration
+    /contents/inclined_surface_solar_radiation
+    /contents/solar_shading
 

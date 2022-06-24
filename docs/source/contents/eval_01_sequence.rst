@@ -1,19 +1,62 @@
-﻿.. include:: definition.txt
+.. include:: definition.txt
 
-************************************************************************************************************************
-負荷計算（主要部分）
-************************************************************************************************************************
+.. raw:: latex
+
+    \clearpage
 
 ========================================================================================================================
-I. 評価法
+繰り返し計算
 ========================================================================================================================
 
 ------------------------------------------------------------------------------------------------------------------------
 1 はじめに
 ------------------------------------------------------------------------------------------------------------------------
 
+本節では、温湿度、顕熱・潜熱負荷の計算方法について記述する。
+
+本節で必要とされる値は、別の節で記述する。
+
+本節で示す計算の結果、次の値が得られる。
+
+次の時刻に引き渡す値（瞬時値）
+
+    1. ステップ |n| における室 |i| の室温 :math:`\theta_{r,i,n}`, ℃
+    2. ステップ |n| における室 |i| の在室者の平均放射温度（MRT） :math:`\theta_{MRT,hum,i,n}`, ℃
+    3. ステップ |n| における室 |i| の絶対湿度 :math:`X_{r,i,n}`, kg / kg(DA)
+    4. ステップ |n| における室 |i| の備品等の温度 :math:`\theta_{frt,i,n}`, ℃
+    5. ステップ |n| における室 |i| の備品等の絶対湿度 :math:`X_{frt,i,n}`, kg / kg(DA)
+    6. ステップ |n| における境界 |j| の等価空気温度 :math:`\theta_{s,ei,j,n}`, ℃
+    7. ステップ |n| における境界 |j| の熱流 :math:`q_{s,j,n}`, W / |m2|
+
+次の時刻に引き渡さない値（瞬時値）
+
+    1. ステップ |n| における室 |i| の作用温度 :math:`\theta_{ot,i,n}`, ℃
+    2. ステップ |n| における境界 |j| の表面温度 :math:`\theta_{s,j,n}`, ℃
+    3. ステップ |n| における境界 |j| の裏面温度 :math:`\theta_{rear,j,n}`, ℃
+
+次の時刻に引き渡す値（平均値・積算値）
+
+    1. ステップ |n| からステップ |n+1| における室 |i| の運転方法
+
+次の時刻に引き渡さない値（積算値）
+
+    1. ステップ |n| からステップ |n+1| における室 |i| の対流顕熱空調負荷 :math:`L_{CS,i,n}`, W
+    2. ステップ |n| からステップ |n+1| における室 |i| の放射顕熱空調負荷 :math:`L_{RS,i,n}`, W
+    3. ステップ |n| からステップ |n+1| における室 |i| の対流潜熱空調負荷 :math:`L_{CL,i,n}`, W
+
+次の時刻に引き渡さない値（平均値）
+
+    1. ステップ |n| からステップ |n+1| における室 |i| の人体周りの対流熱伝達率 :math:`h_{hum,c,i,n}`, W / |m2| K
+    2. ステップ |n| からステップ |n+1| における室 |i| の人体周りの放射熱伝達率 :math:`h_{hum,r,i,n}`, W / |m2| K
+    3. ステップ |n| からステップ |n+1| における室 |i| の人体発熱 :math:`q_{hum,i,n}`, W
+    4. ステップ |n| からステップ |n+1| における室 |i| の人体発湿 :math:`X_{hum,i,n}`, kg / s
+    5. ステップ |n| からステップ |n+1| における室 |i| の隙間風風量 :math:`V_{reak,i,n}`, |m3| / s
+    6. ステップ |n| からステップ |n+1| における室 |i| の自然換気風量 :math:`V_{ntrl,i,n}`, |m3| / s
+    7. ステップ |n| からステップ |n+1| における室 |i| の人体周りの風速 :math:`v_{hum,i,n}`, m / s
+    8. ステップ |n| からステップ |n+1| における室 |i| の人体のclo値 :math:`clo_{i,n}`, -
+
 ------------------------------------------------------------------------------------------------------------------------
-2 記号及び単位
+2. 記号及び添え字
 ------------------------------------------------------------------------------------------------------------------------
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -22,161 +65,244 @@ I. 評価法
 
 この計算で用いる記号及び単位を次に示す。
 
-:math:`A_{s,j}`
-    | 境界 |j| の面積, |m2|
-:math:`c_a`
-    | 空気の比熱, J/(kg K)
-:math:`C_{lh,frt,i}`
-    | 室 |i| の備品等の湿気容量, kg/(kg/kg(DA))
-:math:`C_{sh,frt,i}`
-    | 室 |i| の備品等の熱容量, J/K
-:math:`f_{flr,c,i,j}`
-    | 室 |i| の放射冷房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率, -
-:math:`f_{flr,h,i,j}`
-    | 室 |i| の放射暖房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率, -
-:math:`\hat{f}_{flr,i,j,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の放射暖冷房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率, -
-:math:`f_{mrt,hum,i,j}`
-    | 室 |i| の人体に対する境界 |j| の形態係数, -
-:math:`f_{mrt,i,j}`
-    | 室 |i| の微小球に対する境界 |j| の形態係数, -
-:math:`G_{lh,frt,i}`
-    | 室 |i| の備品等と空気間の湿気コンダクタンス, kg/(s kg/kg(DA))
-:math:`G_{sh,frt,i}`
-    | 室 |i| の備品等と空気間の熱コンダクタンス, W/K
-:math:`h_{hum,c,i,n}`
-    | ステップ |n| における室 |i| の人体表面の対流熱伝達率, W/(|m2| K)
-:math:`h_{hum,r,i,n}`
-    | ステップ |n| における室 |i| の人体表面の放射熱伝達率, W/(|m2| K)
-:math:`h_{s,c,j}`
-    | 境界 |j| の室内側対流熱伝達率, W/(|m2| K)
-:math:`h_{s,r,j}`
-    | 境界 |j| の室内側放射熱伝達率, W/(|m2| K)
-:math:`k_{ei,j,j*}`
-    | 境界 |j| の裏面温度に境界　|j*| の等価温度が与える影響, -
-:math:`k_{eo,j}`
-    | 境界 |j| の温度差係数, -
-:math:`k_{c,i,n}`
-    | ステップ |n| における室 |i| の人体表面の対流熱伝達率が総合熱伝達率に占める割合, -
-:math:`k_{r,i,n}`
-    | ステップ |n| における室 |i| の人体表面の放射熱伝達率が総合熱伝達率に占める割合, -
-:math:`\hat{L}_{CL,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の対流暖冷房設備の潜熱処理量（加湿を正・除湿を負とする）, W
-:math:`\hat{L}_{CS,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の対流暖冷房設備の顕熱処理量（暖房を正・冷房を負とする）, W
-:math:`\hat{L}_{RS,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| に放射暖冷房設備の顕熱処理量（暖房を正・冷房を負とする）, W
-:math:`l_{wtr}`
-    | 水の蒸発潜熱, J/kg
-:math:`\hat{n}_{hum,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の在室人数, -
-:math:`p_{i,j}`
-    | 室 |i| と境界 |j| の接続に関する係数（境界 |j| が室 |i| に接している場合は :math:`1` とし、それ以外の場合は :math:`0` とする。）, -
-:math:`p_{s,sol,abs,j}`
-    | 境界 |j| において透過日射を吸収するか否かを表す係数（吸収する場合は :math:`1` とし、吸収しない場合は :math:`0` とする。）, -
-:math:`\hat{q}_{gen,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の人体発熱を除く内部発熱, W
-:math:`\hat{q}_{hum,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の人体発熱, W
-:math:`\hat{q}_{hum,psn,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の1人あたりの人体発熱, W
-:math:`q_{RS,c,max,i}`
-    | 室 |i| の放射暖房設備の最大放熱量（放熱を正とする）, W
-:math:`q_{RS,h,max,i}`
-    | 室 |i| の放射冷房設備の最大吸熱量（吸熱を負とする）, W
-:math:`q_{s,j,n}`
-    | ステップ |n| における境界 |j| の表面熱流（壁体吸熱を正とする）, W/|m2|
-:math:`q_{s,sol,j,n}`
-    | ステップ |n| における境界 |j| の透過日射吸収熱量, W/|m2|
-:math:`\hat{q}_{sol,frt,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| に設置された備品等による透過日射吸収熱量時間平均値, W
-:math:`q_{trs,sol,i,n}`
-    | ステップ |n| における室 |i| の透過日射熱量, W
-:math:`r_{j,m}`
-    | 境界 |j| の項別公比法の指数項 |m| の公比, -
-:math:`\hat{r}_{ac,demand,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の空調需要, -
-:math:`\hat{V}_{leak,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| のすきま風量, |m3|/s
-:math:`V_{rm,i}`
-    | 室 |i| の容積, |m3|
-:math:`\hat{V}_{vent,int,i,i*,n}`
-    | ステップ |n| からステップ |n+1| における室 |i*| から室 |i| への室間の空気移動量（流出換気量を含む）, |m3|/s
-:math:`\hat{V}_{vent,mec,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の機械換気量（全般換気量と局所換気量の合計値）, |m3|/s
-:math:`\hat{V}_{vent,mec,general,i}`
-    | ステップ |n| からステップ |n+1| における室 |i| の機械換気量（全般換気量）, |m3|/s
-:math:`\hat{V}_{vent,mec,local,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の機械換気量（局所換気量）, |m3|/s
-:math:`\hat{V}_{vent,ntr,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の自然風利用による換気量, |m3|/s
-:math:`\hat{V}_{vent,ntr,set,i}`
-    | 室 |i| の自然風利用時の換気量, |m3|/s
-:math:`\hat{V}_{vent,out,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の換気・すきま風・自然風の利用による外気の流入量, |m3|/s
-:math:`X_{frt,i,n}`
-    | ステップ |n| における室 |i| の備品等の絶対湿度, kg/kg(DA)
-:math:`\hat{X}_{gen,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の人体発湿を除く内部発湿, kg/s
-:math:`\hat{X}_{hum,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の人体発湿, kg/s
-:math:`\hat{X}_{hum,psn,i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の1人あたりの人体発湿, kg/s
-:math:`X_{o,n}`
-    | ステップ |n| における外気絶対湿度, kg/kg(DA)
-:math:`X_{r,i,n}`
-    | ステップ |n| における室 |i| の絶対湿度, kg/kg(DA)
-:math:`X_{r,ntr,i,n}`
-    | ステップ |n| における室 |i| の加湿・除湿を行わない場合の絶対湿度, kg/kg(DA)
-:math:`\hat{\beta}_{i,n}`
-    | ステップ |n| からステップ |n+1| における室 |i| の放射暖冷房設備の対流成分比率, -
-:math:`\beta_{c,i}`
-    | 室 |i| の放射冷房設備の対流成分比率, -
-:math:`\beta_{h,i}`
-    | 室 |i| の放射暖房設備の対流成分比率, -
-:math:`\Delta t`
-    | 1ステップの時間間隔, s
-:math:`\theta_{dstrb,j,n}`
-    | ステップ |n| の境界 |j| における外気側等価温度の外乱成分, ℃
-:math:`\theta_{ei,j,n}`
-    | ステップ |n| における境界 |j| の等価温度, ℃
-:math:`\theta_{frt,i,n}`
-    | ステップ |n| における室 |i| の備品等の温度, ℃
-:math:`\theta_{lower,target,i,n}`
-    | ステップ |n| における室 |i| の目標作用温度の下限値 , ℃
-:math:`\theta_{mrt,hum,i,n}`
-    | ステップ |n| における室 |i| の人体の平均放射温度, ℃
-:math:`\theta_{o,n}`
-    | ステップ |n| における外気温度, ℃
-:math:`\theta_{o,eqv,j,n}`
-    | ステップ |n| における境界 |j| の相当外気温度, ℃
-:math:`\theta_{OT,i,n}`
-    | ステップ |n| における室 |i| の作用温度, ℃
-:math:`\theta_{r,i,n}`
-    | ステップ |n| における室 |i| の温度, ℃
-:math:`\theta_{r,OT,ntr,i,n}`
-    | ステップ |n| における室 |i| の自然作用温度 , ℃
-:math:`\theta_{rear,j,n}`
-    | ステップ |n| における境界 |j| の裏面温度, ℃
-:math:`\theta_{s,j,n}`
-    | ステップ |n| における境界 |j| の表面温度, ℃
-:math:`\theta'_{s,a,j,m,n}`
-    | ステップ |n| における境界 |j| の項別公比法の指数項 |m| の吸熱応答の項別成分, ℃
-:math:`\theta'_{s,t,j,m,n}`
-    | ステップ |n| における境界 |j| の項別公比法の指数項 |m| の貫流応答の項別成分, ℃
-:math:`\theta_{upper,target,i,n}`
-    | ステップ |n| における室 |i| の目標作用温度の上限値 , ℃
-:math:`\rho_a`
-    | 空気の密度, kg/|m3|
-:math:`\phi_{a0,j}`
-    | 境界 |j| の吸熱応答係数の初項, |m2| K/W
-:math:`\phi_{a1,j,m}`
-    | 境界 |j| の項別公比法の指数項 |m| の吸熱応答係数, |m2| K/W
-:math:`\phi_{t0,j}`
-    | 境界 |j| の貫流応答係数の初項, -
-:math:`\phi_{t1,j,m}`
-    | 境界 |j| の項別公比法の指数項 |m| の貫流応答係数, -
+.. list-table:: 表1 記号及び単位
+    :header-rows: 1
+    :widths: 1,6,1
 
+    * - 記号
+      - 意味
+      - 単位
+    * - :math:`A_{s,j}`
+      - 境界 |j| の面積
+      - |m2|
+    * - :math:`c_a`
+      - 空気の比熱
+      - J / kg K
+    * - :math:`C_{lh,frt,i}`
+      - 室 |i| の備品等の湿気容量
+      - kg / ( kg / kg(DA) )
+    * - :math:`C_{sh,frt,i}`
+      - 室 |i| の備品等の熱容量
+      - J / K
+    * - :math:`f_{flr,c,i,j}`
+      - 室 |i| の放射冷房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率
+      - －
+    * - :math:`f_{flr,h,i,j}`
+      - 室 |i| の放射暖房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率
+      - －
+    * - :math:`\hat{f}_{flr,i,j,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の放射暖冷房設備の放熱量の放射成分に対する境界 |j| の室内側表面の吸収比率
+      - －
+    * - :math:`f_{mrt,hum,i,j}`
+      - 室 |i| の人体に対する境界 |j| の形態係数
+      - －
+    * - :math:`f_{mrt,i,j}`
+      - 室 |i| の微小球に対する境界 |j| の形態係数
+      - －
+    * - :math:`G_{lh,frt,i}`
+      - 室 |i| の備品等と空気間の湿気コンダクタンス
+      - kg / s ( kg / kg(DA) )
+    * - :math:`G_{sh,frt,i}`
+      - 室 |i| の備品等と空気間の熱コンダクタンス
+      - W / K
+    * - :math:`h_{hum,c,i,n}`
+      - ステップ |n| における室 |i| の人体表面の対流熱伝達率
+      - W / |m2| K
+    * - :math:`h_{hum,r,i,n}`
+      - ステップ |n| における室 |i| の人体表面の放射熱伝達率
+      - W / |m2| K
+    * - :math:`h_{s,c,j}`
+      - 境界 |j| の室内側対流熱伝達率
+      - W / |m2| K
+    * - :math:`h_{s,r,j}`
+      - 境界 |j| の室内側放射熱伝達率
+      - W / |m2| K
+    * - :math:`k_{ei,j,j*}`
+      - 境界 |j| の裏面温度に境界　|j*| の等価温度が与える影響
+      - －
+    * - :math:`k_{eo,j}`
+      - 境界 |j| の温度差係数
+      - －
+    * - :math:`k_{c,i,n}`
+      - ステップ |n| における室 |i| の人体表面の対流熱伝達率が総合熱伝達率に占める割合
+      - －
+    * - :math:`k_{r,i,n}`
+      - ステップ |n| における室 |i| の人体表面の放射熱伝達率が総合熱伝達率に占める割合
+      - －
+    * - :math:`\hat{L}_{CL,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の対流暖冷房設備の潜熱処理量（加湿を正・除湿を負とする）
+      - W
+    * - :math:`\hat{L}_{CS,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の対流暖冷房設備の顕熱処理量（暖房を正・冷房を負とする）
+      - W
+    * - :math:`\hat{L}_{RS,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| に放射暖冷房設備の顕熱処理量（暖房を正・冷房を負とする）
+      - W
+    * - :math:`l_{wtr}`
+      - 水の蒸発潜熱
+      - J / kg
+    * - :math:`\hat{n}_{hum,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の在室人数
+      - －
+    * - :math:`p_{i,j}`
+      - 室 |i| と境界 |j| の接続に関する係数（境界 |j| が室 |i| に接している場合は :math:`1` とし、それ以外の場合は :math:`0` とする。）
+      - －
+    * - :math:`p_{s,sol,abs,j}`
+      - 境界 |j| において透過日射を吸収するか否かを表す係数（吸収する場合は :math:`1` とし、吸収しない場合は :math:`0` とする。）
+      - －
+    * - :math:`\hat{q}_{gen,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の人体発熱を除く内部発熱
+      - W
+    * - :math:`\hat{q}_{hum,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の人体発熱
+      - W
+    * - :math:`\hat{q}_{hum,psn,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の1人あたりの人体発熱
+      - W
+    * - :math:`q_{RS,c,max,i}`
+      - 室 |i| の放射暖房設備の最大放熱量（放熱を正とする）
+      - W
+    * - :math:`q_{RS,h,max,i}`
+      - 室 |i| の放射冷房設備の最大吸熱量（吸熱を負とする）
+      - W
+    * - :math:`q_{s,j,n}`
+      - ステップ |n| における境界 |j| の表面熱流（壁体吸熱を正とする）
+      - W / |m2|
+    * - :math:`q_{s,sol,j,n}`
+      - ステップ |n| における境界 |j| の透過日射吸収熱量
+      - W / |m2|
+    * - :math:`\hat{q}_{sol,frt,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| に設置された備品等による透過日射吸収熱量時間平均値
+      - W
+    * - :math:`q_{trs,sol,i,n}`
+      - ステップ |n| における室 |i| の透過日射熱量
+      - W
+    * - :math:`r_{j,m}`
+      - 境界 |j| の項別公比法の指数項 |m| の公比
+      - －
+    * - :math:`\hat{r}_{ac,demand,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の空調需要
+      - －
+    * - :math:`\hat{V}_{leak,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| のすきま風量
+      - |m3| / s
+    * - :math:`V_{rm,i}`
+      - 室 |i| の容積
+      - |m3|
+    * - :math:`\hat{V}_{vent,int,i,i*,n}`
+      - ステップ |n| からステップ |n+1| における室 |i*| から室 |i| への室間の空気移動量（流出換気量を含む）
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,mec,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の機械換気量（全般換気量と局所換気量の合計値）
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,mec,general,i}`
+      - ステップ |n| からステップ |n+1| における室 |i| の機械換気量（全般換気量）
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,mec,local,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の機械換気量（局所換気量）
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,ntr,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の自然風利用による換気量
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,ntr,set,i}`
+      - 室 |i| の自然風利用時の換気量
+      - |m3| / s
+    * - :math:`\hat{V}_{vent,out,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の換気・すきま風・自然風の利用による外気の流入量
+      - |m3|/s
+    * - :math:`X_{frt,i,n}`
+      - ステップ |n| における室 |i| の備品等の絶対湿度
+      - kg / kg(DA)
+    * - :math:`\hat{X}_{gen,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の人体発湿を除く内部発湿
+      - kg / s
+    * - :math:`\hat{X}_{hum,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の人体発湿
+      - kg / s
+    * - :math:`\hat{X}_{hum,psn,i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の1人あたりの人体発湿
+      - kg / s
+    * - :math:`X_{o,n}`
+      - ステップ |n| における外気絶対湿度
+      - kg / kg(DA)
+    * - :math:`X_{r,i,n}`
+      - ステップ |n| における室 |i| の絶対湿度
+      - kg / kg(DA)
+    * - :math:`X_{r,ntr,i,n}`
+      - ステップ |n| における室 |i| の加湿・除湿を行わない場合の絶対湿度
+      - kg / kg(DA)
+    * - :math:`\hat{\beta}_{i,n}`
+      - ステップ |n| からステップ |n+1| における室 |i| の放射暖冷房設備の対流成分比率
+      - －
+    * - :math:`\beta_{c,i}`
+      - 室 |i| の放射冷房設備の対流成分比率
+      - －
+    * - :math:`\beta_{h,i}`
+      - 室 |i| の放射暖房設備の対流成分比率
+      - －
+    * - :math:`\Delta t`
+      - 1ステップの時間間隔
+      - s
+    * - :math:`\theta_{dstrb,j,n}`
+      - ステップ |n| の境界 |j| における外気側等価温度の外乱成分
+      - ℃
+    * - :math:`\theta_{ei,j,n}`
+      - ステップ |n| における境界 |j| の等価温度
+      - ℃
+    * - :math:`\theta_{frt,i,n}`
+      - ステップ |n| における室 |i| の備品等の温度
+      - ℃
+    * - :math:`\theta_{lower,target,i,n}`
+      - ステップ |n| における室 |i| の目標作用温度の下限値
+      - ℃
+    * - :math:`\theta_{mrt,hum,i,n}`
+      - ステップ |n| における室 |i| の人体の平均放射温度
+      - ℃
+    * - :math:`\theta_{o,n}`
+      - ステップ |n| における外気温度
+      - ℃
+    * - :math:`\theta_{o,eqv,j,n}`
+      - ステップ |n| における境界 |j| の相当外気温度
+      - ℃
+    * - :math:`\theta_{OT,i,n}`
+      - ステップ |n| における室 |i| の作用温度
+      - ℃
+    * - :math:`\theta_{r,i,n}`
+      - ステップ |n| における室 |i| の温度
+      - ℃
+    * - :math:`\theta_{r,OT,ntr,i,n}`
+      - ステップ |n| における室 |i| の自然作用温度
+      - ℃
+    * - :math:`\theta_{rear,j,n}`
+      - ステップ |n| における境界 |j| の裏面温度
+      - ℃
+    * - :math:`\theta_{s,j,n}`
+      - ステップ |n| における境界 |j| の表面温度
+      - ℃
+    * - :math:`\theta'_{s,a,j,m,n}`
+      - ステップ |n| における境界 |j| の項別公比法の指数項 |m| の吸熱応答の項別成分
+      - ℃
+    * - :math:`\theta'_{s,t,j,m,n}`
+      - ステップ |n| における境界 |j| の項別公比法の指数項 |m| の貫流応答の項別成分
+      - ℃
+    * - :math:`\theta_{upper,target,i,n}`
+      - ステップ |n| における室 |i| の目標作用温度の上限値
+      - ℃
+    * - :math:`\rho_a`
+      - 空気の密度
+      - kg / |m3|
+    * - :math:`\phi_{a0,j}`
+      - 境界 |j| の吸熱応答係数の初項
+      - |m2| K / W
+    * - :math:`\phi_{a1,j,m}`
+      - 境界 |j| の項別公比法の指数項 |m| の吸熱応答係数
+      - |m2| K / W
+    * - :math:`\phi_{t0,j}`
+      - 境界 |j| の貫流応答係数の初項
+      - －
+    * - :math:`\phi_{t1,j,m}`
+      - 境界 |j| の項別公比法の指数項 |m| の貫流応答係数
+      - －
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 2.2 記号（ベクトル）
@@ -184,80 +310,121 @@ I. 評価法
 
 この計算で用いる記号及び単位を次に示す。
 
-:math:`\pmb{A}_{s}`
-    | :math:`A_{s,j}` を要素にもつ :math:`J \times J` の対角化行列, |m2|
-:math:`\pmb{C}_{frt}`
-    | :math:`C_{frt,i}` を要素にもつ :math:`I \times I` の対角化行列, J/K
-:math:`\pmb{C}_{lh,frt}`
-    | :math:`C_{lh,frt,i}` を要素にもつ :math:`I \times I` の対角化行列, kg/(kg/kg(DA))
-:math:`\hat{\pmb{f}}_{flr,n}`
-    | :math:`\hat{f}_{flr,i,j,n}` を要素にもつ :math:`J \times I` の行列, -
-:math:`\pmb{f}_{mrt}`
-    | :math:`f_{mrt,i,j}` を要素にもつ :math:`I \times J` の行列 , -
-:math:`\pmb{G}_{frt}`
-    | :math:`G_{frt,i}` を要素にもつ :math:`I \times I` の対角化行列, W / K
-:math:`\pmb{h}_{s,c}`
-    | :math:`h_{s,c,j}` を要素にもつ :math:`J \times J` の対角化行列
-:math:`\pmb{h}_{s,r}`
-    | :math:`h_{s,r,j}` を要素にもつ :math:`J \times J` の対角化行列
-:math:`\pmb{k}_{c,n}`
-    | :math:`k_{c,i,n}` を要素にもつ :math:`I \times I` の対角化行列
-:math:`\pmb{k}_{ei}`
-    | :math:`k_{ei,j,j*}` を要素にもつ :math:`J \times J` の行列, -
-:math:`\pmb{k}_{r,n}`
-    | :math:`k_{r,i,n}` を要素にもつ :math:`I \times I` の対角化行列
-:math:`\hat{\pmb{L}}_{CL,n}`
-    | :math:`\hat{L}_{CL,i,n}` を要素にもつ :math:`I \times 1` の縦行列, W
-:math:`\hat{\pmb{L}}_{CS,n}`
-    | :math:`\hat{L}_{CS,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, W
-:math:`\hat{\pmb{L}}_{RS,n}`
-    | :math:`\hat{L}_{RS,i,n}` を要素にもつ :math:`I \times 1` の縦行列, W
-:math:`\pmb{p}_{ij}`
-    | :math:`p_{i,j}` を要素にもつ :math:`I \times J` の行列, -
-:math:`\pmb{p}_{ji}`
-    | :math:`p_{i,j}` を要素にもつ :math:`J \times I` の行列, -
-:math:`\hat{\pmb{q}}_{gen,n}`
-    | :math:`\hat{q}_{gen,i,n}` を要素にもつ :math:`I \times 1` の縦行列, W
-:math:`\hat{\pmb{q}}_{hum,n}`
-    | :math:`\hat{q}_{hum,i,n}` を要素にもつ :math:`I \times 1` の縦行列, W
-:math:`\pmb{q}_{s,sol,n}`
-    | :math:`q_{s,sol,j,n}` を要素にもつ :math:`J \times 1` の縦行列, W/|m2|
-:math:`\hat{\pmb{V}}_n`
-    | :math:`V_{i,n}` を要素にもつ :math:`I \times I` の対角化行列, |m3| |s-1|
-:math:`\hat{\pmb{V}}_{vent,int,n}`
-    | :math:`\hat{V}_{vent,int,i,i*,n}` を要素にもつ :math:`I \times I` の行列, |m3| |s-1|
-:math:`\hat{\pmb{V}}_{vent,out,n}`
-    | :math:`\hat{V}_{vent,out,i,n}` を要素にもつ :math:`I \times 1` の縦行列, |m3| |s-1|
-:math:`\pmb{X}_{r,n}`
-    | :math:`X_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列, kg/kg(DA)
-:math:`\pmb{X}_{r,ntr,n+1}`
-    | :math:`X_{r,ntr,i,n+1}` を要素にもつ :math:`I \times 1` の縦行列, kg/kg(DA)
-:math:`\hat{\pmb{\beta}}_{n}`
-    | :math:`\hat{\beta}_{i,n}` を要素にもつ :math:`I \times I` の対角化行列
-:math:`\pmb{\theta}_{dstrb,n}`
-    | :math:`\theta_{dstrb,j,n}` を要素にもつ :math:`J \times 1` の縦行列, ℃
-:math:`\pmb{\theta}_{frt,n}`
-    | :math:`\theta_{frt,i,n}` を要素にもつ :math:`I \times 1` の縦行列, ℃
-:math:`\pmb{\theta}_{o,n}`
-    | :math:`I \times 1` の縦行列であり、 :math:`\theta_{o,i,n} = \theta_{o,n}` , ℃
-:math:`\pmb{\theta}_{OT,n}`
-    | :math:`\theta_{OT,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, -
-:math:`\pmb{\theta}_{r,n}`
-    | :math:`\theta_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列, ℃
-:math:`\pmb{\theta}_{rear,n}`
-    | :math:`\theta_{rear,j,n}` を要素にもつ :math:`J \times 1` の縦行列, ℃
-:math:`\pmb{\theta}_{s,n}`
-    | :math:`\theta_{s,j,n}` を要素にもつ :math:`J \times 1` の縦行列, ℃
-:math:`\pmb{\phi}_{a0}`
-    | :math:`\phi_{a0,j}` を要素にもつ :math:`J \times J` の対角化行列, |m2| K/W
-:math:`\pmb{\phi}_{t0}`
-    | :math:`\phi_{t0,j}` を要素にもつ :math:`J \times J` の対角化行列, -
+.. list-table:: 表1 記号及び単位
+    :header-rows: 1
+    :widths: 1,6,1
+
+    * - 記号
+      - 意味
+      - 単位
+    * - :math:`\pmb{A}_{s}`
+      - :math:`A_{s,j}` を要素にもつ :math:`J \times J` の対角化行列
+      - |m2|
+    * - :math:`\pmb{C}_{frt}`
+      - :math:`C_{frt,i}` を要素にもつ :math:`I \times I` の対角化行列
+      - J / K
+    * - :math:`\pmb{C}_{lh,frt}`
+      - :math:`C_{lh,frt,i}` を要素にもつ :math:`I \times I` の対角化行列
+      - kg / ( kg / kg(DA) )
+    * - :math:`\hat{\pmb{f}}_{flr,n}`
+      - :math:`\hat{f}_{flr,i,j,n}` を要素にもつ :math:`J \times I` の行列
+      - －
+    * - :math:`\pmb{f}_{mrt}`
+      - :math:`f_{mrt,i,j}` を要素にもつ :math:`I \times J` の行列
+      - －
+    * - :math:`\pmb{G}_{frt}`
+      - :math:`G_{frt,i}` を要素にもつ :math:`I \times I` の対角化行列
+      - W / K
+    * - :math:`\pmb{h}_{s,c}`
+      - :math:`h_{s,c,j}` を要素にもつ :math:`J \times J` の対角化行列
+      - －
+    * - :math:`\pmb{h}_{s,r}`
+      - :math:`h_{s,r,j}` を要素にもつ :math:`J \times J` の対角化行列
+      - －
+    * - :math:`\pmb{k}_{c,n}`
+      - :math:`k_{c,i,n}` を要素にもつ :math:`I \times I` の対角化行列
+      - －
+    * - :math:`\pmb{k}_{ei}`
+      - :math:`k_{ei,j,j*}` を要素にもつ :math:`J \times J` の行列
+      - －
+    * - :math:`\pmb{k}_{r,n}`
+      - :math:`k_{r,i,n}` を要素にもつ :math:`I \times I` の対角化行列
+      - －
+    * - :math:`\hat{\pmb{L}}_{CL,n}`
+      - :math:`\hat{L}_{CL,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - W
+    * - :math:`\hat{\pmb{L}}_{CS,n}`
+      - :math:`\hat{L}_{CS,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列
+      - W
+    * - :math:`\hat{\pmb{L}}_{RS,n}`
+      - :math:`\hat{L}_{RS,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - W
+    * - :math:`\pmb{p}_{ij}`
+      - :math:`p_{i,j}` を要素にもつ :math:`I \times J` の行列
+      - －
+    * - :math:`\pmb{p}_{ji}`
+      - :math:`p_{i,j}` を要素にもつ :math:`J \times I` の行列
+      - －
+    * - :math:`\hat{\pmb{q}}_{gen,n}`
+      - :math:`\hat{q}_{gen,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - W
+    * - :math:`\hat{\pmb{q}}_{hum,n}`
+      - :math:`\hat{q}_{hum,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - W
+    * - :math:`\pmb{q}_{s,sol,n}`
+      - :math:`q_{s,sol,j,n}` を要素にもつ :math:`J \times 1` の縦行列
+      - W / |m2|
+    * - :math:`\hat{\pmb{V}}_n`
+      - :math:`V_{i,n}` を要素にもつ :math:`I \times I` の対角化行列
+      - |m3| / s
+    * - :math:`\hat{\pmb{V}}_{vent,int,n}`
+      - :math:`\hat{V}_{vent,int,i,i*,n}` を要素にもつ :math:`I \times I` の行列
+      - |m3| / s
+    * - :math:`\hat{\pmb{V}}_{vent,out,n}`
+      - :math:`\hat{V}_{vent,out,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - |m3| s
+    * - :math:`\pmb{X}_{r,n}`
+      - :math:`X_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - kg / kg(DA)
+    * - :math:`\pmb{X}_{r,ntr,n+1}`
+      - :math:`X_{r,ntr,i,n+1}` を要素にもつ :math:`I \times 1` の縦行列
+      - kg / kg(DA)
+    * - :math:`\hat{\pmb{\beta}}_{n}`
+      - :math:`\hat{\beta}_{i,n}` を要素にもつ :math:`I \times I` の対角化行列
+      - －
+    * - :math:`\pmb{\theta}_{dstrb,n}`
+      - :math:`\theta_{dstrb,j,n}` を要素にもつ :math:`J \times 1` の縦行列
+      - ℃
+    * - :math:`\pmb{\theta}_{frt,n}`
+      - :math:`\theta_{frt,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - ℃
+    * - :math:`\pmb{\theta}_{o,n}`
+      - :math:`I \times 1` の縦行列であり、 :math:`\theta_{o,i,n} = \theta_{o,n}`
+      - ℃
+    * - :math:`\pmb{\theta}_{OT,n}`
+      - :math:`\theta_{OT,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列
+      - －
+    * - :math:`\pmb{\theta}_{r,n}`
+      - :math:`\theta_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列
+      - ℃
+    * - :math:`\pmb{\theta}_{rear,n}`
+      - :math:`\theta_{rear,j,n}` を要素にもつ :math:`J \times 1` の縦行列
+      - ℃
+    * - :math:`\pmb{\theta}_{s,n}`
+      - :math:`\theta_{s,j,n}` を要素にもつ :math:`J \times 1` の縦行列
+      - ℃
+    * - :math:`\pmb{\phi}_{a0}`
+      - :math:`\phi_{a0,j}` を要素にもつ :math:`J \times J` の対角化行列
+      - |m2| K / W
+    * - :math:`\pmb{\phi}_{t0}`
+      - :math:`\phi_{t0,j}` を要素にもつ :math:`J \times J` の対角化行列
+      - －
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 2.3 温度バランス・熱バランスに関する係数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-ステップ |n+1| における境界 |j| の表面温度 :math:`\theta_{s,j,n+1}`　、
+ステップ |n+1| における境界 |j| の表面温度 :math:`\theta_{s,j,n+1}`、
 ステップ |n+1| における室 |j| の温度 :math:`\theta,j,n+1` 、及び
 ステップ |n| からステップ |n+1| における室 |i| の放射暖冷房設備の顕熱処理量（暖房を正・冷房を負とする）  :math:`\hat{L}_{RS,i,n}`
 の関係は次式で表されるとする。
@@ -328,68 +495,60 @@ I. 評価法
 
 ここで、
 
-:math:`\pmb{f}_{AX}`
-    | :math:`f_{AX,j,j*}` を要素にもつ、:math:`J \times J` の行列, -
-:math:`\pmb{f}_{FIA}`
-    | :math:`f_{FIA,j,i}` を要素にもつ、:math:`J \times I` の行列, -
-:math:`\pmb{f}_{CRX,n}`
-    | :math:`f_{CRX,j,j*,n}` を要素にもつ :math:`I \times 1` で表される縦行列, ℃
-:math:`\pmb{F}_{FLB,n}`
-    | :math:`f_{FLB,j，i,n}` を要素にもつ、:math:`J \times I` の行列, K/W
-:math:`\pmb{f}_{CVL,n}`
-    | :math:`f_{CVL,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
+:math:`\pmb{f}_{AX}` : :math:`f_{AX,j,j*}` を要素にもつ、:math:`J \times J` の行列, -
 
-:math:`\pmb{ｆ}_{WSR}`
-    | :math:`f_{WSR,j,i}` を要素にもつ :math:`J \times I` で表される行列, -
-:math:`\pmb{f}_{WSC,n}`
-    | :math:`f_{WSC,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
-:math:`\pmb{f}_{WSB,n}`
-    | :math:`f_{WSB,j,i,n}` を要素にもつ :math:`J \times I` で表される行列, K/W
-:math:`\pmb{f}_{WSV,n}`
-    | :math:`f_{WSV,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
+:math:`\pmb{f}_{FIA}` : :math:`f_{FIA,j,i}` を要素にもつ、:math:`J \times I` の行列, -
 
-:math:`\hat{\pmb{f}}_{BRM,n}`
-    | :math:`\hat{f}_{BRM,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W / K
-:math:`\hat{\pmb{f}}_{BRC,n}`
-    | :math:`\hat{f}_{BRC,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, W
-:math:`\hat{\pmb{f}}_{BRL,n}`
-    | :math:`\hat{f}_{BRL,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, -
+:math:`\pmb{f}_{CRX,n}` : :math:`f_{CRX,j,j*,n}` を要素にもつ :math:`I \times 1` で表される縦行列, ℃
 
-:math:`\pmb{f}_{XOT,n}`
-    | :math:`f_{XOT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, -
-:math:`\pmb{f}_{XLR,n}`
-    | :math:`f_{XLR,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, K/W
-:math:`\pmb{f}_{XC,n}`
-    | :math:`f_{XC,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, ℃
+:math:`\pmb{f}_{FLB,n}` : :math:`f_{FLB,j,i,n}` を要素にもつ、:math:`J \times I` の行列, K/W
 
-:math:`\hat{\pmb{f}}_{BRM,OT,n}`
-    | :math:`\hat{f}_{BRM,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W/K
-:math:`\hat{\pmb{f}}_{BRC,OT,n}`
-    | :math:`\hat{f}_{BRC,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W
-:math:`\hat{\pmb{f}}_{BRL,OT,n}`
-    | :math:`\hat{f}_{BRL,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される縦行列, -
+:math:`\pmb{f}_{CVL,n}` : :math:`f_{CVL,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
+
+:math:`\pmb{f}_{WSR}` : :math:`f_{WSR,j,i}` を要素にもつ :math:`J \times I` で表される行列, -
+
+:math:`\pmb{f}_{WSC,n}` : :math:`f_{WSC,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
+
+:math:`\pmb{f}_{WSB,n}` : :math:`f_{WSB,j,i,n}` を要素にもつ :math:`J \times I` で表される行列, K/W
+
+:math:`\pmb{f}_{WSV,n}` : :math:`f_{WSV,j,n}` を要素にもつ :math:`J \times 1` で表される縦行列, ℃
+
+:math:`\hat{\pmb{f}}_{BRM,n}` : :math:`\hat{f}_{BRM,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W / K
+
+:math:`\hat{\pmb{f}}_{BRC,n}` : :math:`\hat{f}_{BRC,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, W
+
+:math:`\hat{\pmb{f}}_{BRL,n}` : :math:`\hat{f}_{BRL,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, -
+
+:math:`\pmb{f}_{XOT,n}` : :math:`f_{XOT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, -
+
+:math:`\pmb{f}_{XLR,n}` : :math:`f_{XLR,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, K/W
+
+:math:`\pmb{f}_{XC,n}` : :math:`f_{XC,i,n}` を要素にもつ :math:`I \times 1` で表される縦行列, ℃
+
+:math:`\hat{\pmb{f}}_{BRM,OT,n}` : :math:`\hat{f}_{BRM,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W/K
+
+:math:`\hat{\pmb{f}}_{BRC,OT,n}` : :math:`\hat{f}_{BRC,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される行列, W
+
+:math:`\hat{\pmb{f}}_{BRL,OT,n}` : :math:`\hat{f}_{BRL,OT,i,i,n}` を要素にもつ :math:`I \times I` で表される縦行列, -
 
 である。本資料では、各要素は単に係数と呼び、例えば、
 行列 :math:`\pmb{f}_{AX}` の要素は単に、「係数 :math:`f_{AX,j,j*}` 」と呼ぶ。
 
-:math:`\pmb{f}_{h,cst,n}`
-    | :math:`f_{h,cst,i,n}` を要素にもつ :math:`I \times 1` の縦行列, kg/s
-:math:`\pmb{f}_{h,wgt,n}`
-    | :math:`f_{h,wgt,i,i*,n}` を要素にもつ :math:`I \times I` の行列, kg/(s　(kg/kg(DA)))
-:math:`\hat{\pmb{f}}_{L,CL,cst,n}`
-    | :math:`\hat{f}_{L,CL,cst,i,n}` を要素にもつ :math:`I \times 1` の縦行列, kg/s
-:math:`\hat{\pmb{f}}_{L,CL,wgt,n}`
-    | :math:`\hat{f}_{L,CL,wgt,i,i*,n}` を要素にもつ :math:`I \times I` の行列, kg/(s (kg/kg(DA)))
+:math:`\pmb{f}_{h,cst,n}` : :math:`f_{h,cst,i,n}` を要素にもつ :math:`I \times 1` の縦行列, kg/s
 
-:math:`f_{h,cst,i,n}`
-    | ステップ |n| における室 |i| の潜熱バランスに関する係数, kg/s
-:math:`f_{h,wgt,i,i*,n}`
-    | ステップ |n| における室 |i*| の絶対湿度が室 |i| の潜熱バランスに与える影響を表す係数, kg/(s (kg/kg(DA)))
-:math:`\hat{f}_{L,CL,cst,i,n}`
-    | ステップ |n| から |n+1| における室 |i| の潜熱負荷に与える影響を表す係数, kg/s
-:math:`\hat{f}_{L,CL,wgt,i,i*,n}`
-    | ステップ |n+1| における室 |i*| の絶対湿度がステップ |n| から |n+1| における室 |i| の潜熱負荷に与える影響を表す係数, kg/(s (kg/kg(DA)))
+:math:`\pmb{f}_{h,wgt,n}` : :math:`f_{h,wgt,i,i*,n}` を要素にもつ :math:`I \times I` の行列, kg/(s　(kg/kg(DA)))
 
+:math:`\hat{\pmb{f}}_{L,CL,cst,n}` : :math:`\hat{f}_{L,CL,cst,i,n}` を要素にもつ :math:`I \times 1` の縦行列, kg/s
+
+:math:`\hat{\pmb{f}}_{L,CL,wgt,n}` : :math:`\hat{f}_{L,CL,wgt,i,i*,n}` を要素にもつ :math:`I \times I` の行列, kg/(s (kg/kg(DA)))
+
+:math:`f_{h,cst,i,n}` : ステップ |n| における室 |i| の潜熱バランスに関する係数, kg/s
+
+:math:`f_{h,wgt,i,i*,n}` : ステップ |n| における室 |i*| の絶対湿度が室 |i| の潜熱バランスに与える影響を表す係数, kg/(s (kg/kg(DA)))
+
+:math:`\hat{f}_{L,CL,cst,i,n}` : ステップ |n| から |n+1| における室 |i| の潜熱負荷に与える影響を表す係数, kg/s
+
+:math:`\hat{f}_{L,CL,wgt,i,i*,n}` : ステップ |n+1| における室 |i*| の絶対湿度がステップ |n| から |n+1| における室 |i| の潜熱負荷に与える影響を表す係数, kg/(s (kg/kg(DA)))
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 2.4 添え字
@@ -397,10 +556,16 @@ I. 評価法
 
 この計算で用いる添え字を次に示す。
 
-:math:`i`
-    | 室
-:math:`j`
-    | 境界
+.. list-table:: 表3 添え字
+    :header-rows: 1
+    :widths: 1,7
+
+    * - 添え字
+      - 意味
+    * - :math:`i`
+      - 室
+    * - :math:`j`
+      - 境界
 
 ------------------------------------------------------------------------------------------------------------------------
 3 繰り返し計算（建物全般）
@@ -439,7 +604,7 @@ I. 評価法
     :nowrap:
 
     \begin{align*}
-        \pmb{X}_{r,n+1}　= ( \hat{\pmb{f}}_{h,wgt,n} - \hat{\pmb{f}}_{L,CL,wgt,n} )^{-1} \cdot ( \hat{\pmb{f}}_{h,cst,n} + \hat{\pmb{f}}_{L,CL,cst,n} )
+        \pmb{X}_{r,n+1} = ( \hat{\pmb{f}}_{h,wgt,n} - \hat{\pmb{f}}_{L,CL,wgt,n} )^{-1} \cdot ( \hat{\pmb{f}}_{h,cst,n} + \hat{\pmb{f}}_{L,CL,cst,n} )
         \tag{1.3}
     \end{align*}
 
@@ -455,7 +620,7 @@ I. 評価法
     :nowrap:
 
     \begin{align*}
-        \pmb{X}_{r,ntr,n+1}　= \hat{\pmb{f}}_{h,wgt,n}^{-1} \cdot \hat{\pmb{f}}_{h,cst,n}
+        \pmb{X}_{r,ntr,n+1} = \hat{\pmb{f}}_{h,wgt,n}^{-1} \cdot \hat{\pmb{f}}_{h,cst,n}
         \tag{1.4}
     \end{align*}
 
@@ -1169,4 +1334,12 @@ I. 評価法
 - 境界 |j| の項別公比法の指数項 |m| の公比 :math:`r_{j,m}`
 - ステップ |n| における室 |i| の透過日射熱量 :math:`q_{trs,sol,i,n}`
 - ステップ |n| における境界 |j| の相当外気温度 :math:`\theta_{o,eqv,j,n}`
+
+------------------------------------------------------------------------------------------------------------------------
+付録A 室の温度や顕熱負荷が潜熱負荷に影響を与える係数を設定する方法
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
