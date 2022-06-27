@@ -5,5 +5,7 @@
 .. toctree::
 
     ./eval_01_sequence
+    ./eval_02_rooms
     ./eval_10_region
     ./eval_11_solar_position
+    ./eval_12_schedule
