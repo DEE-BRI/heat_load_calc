@@ -14,7 +14,6 @@
     /contents/eval_
     /contents/basis_
     /contents/humidity_balance
-    /contents/furniture
     /contents/period
     /contents/external_boundaries_direction
     /contents/shape_factor

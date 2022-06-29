@@ -9,3 +9,6 @@
     ./eval_10_region
     ./eval_11_solar_position
     ./eval_12_schedule
+    ./eval_13_room
+    ./eval_14_furniture
+

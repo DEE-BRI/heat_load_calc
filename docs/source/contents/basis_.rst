@@ -6,3 +6,4 @@
 
    ./basis_01_heat_balance
    ./basis_02_humidity_balance
+   ./basis_14_furniture
