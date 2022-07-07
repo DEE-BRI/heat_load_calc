@@ -11,4 +11,4 @@
     ./eval_12_schedule
     ./eval_13_room
     ./eval_14_furniture
-
+    ./eval_16_shape_factor
