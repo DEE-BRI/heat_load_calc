@@ -15,7 +15,6 @@
     /contents/basis_
     /contents/humidity_balance
     /contents/period
-    /contents/external_boundaries_direction
     /contents/infiltration
     /contents/inclined_surface_solar_radiation
     /contents/solar_shading
