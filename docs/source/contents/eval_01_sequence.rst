@@ -1131,7 +1131,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{\theta}_{rear,n} = \pmb{k}_{ei} \cdot \pmb{\theta}_{ei,n} + \pmb{\theta}_{dstrb,n}
+        \pmb{\theta}_{rear,n} = \pmb{k}_{ei} \cdot \pmb{\theta}_{ei,n} + \pmb{k}_{eo} \cdot \pmb{\theta}_{o,eqv,n} + \pmb{k}_{s,r} \theta \pmb{\theta}_{r,n}
         \tag{2.32}
     \end{align*}
 
@@ -1234,7 +1234,7 @@
         \pmb{f}_{CRX,n}
         = \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n}
         + \pmb{\phi}_{t0} \cdot \pmb{k}_{ei} \cdot (\pmb{h}_{c} + \pmb{h}_{r})^{-1} \cdot \pmb{q}_{s,sol,n}
-        + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{dstrb,n}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{eo} \cdot \pmb{\theta}_{o,eqv,n}
         \tag{4.3}
     \end{align*}
 
@@ -1248,6 +1248,7 @@
             \pmb{\phi}_{a0} \cdot \pmb{h}_{s,c}
             + \pmb{\phi}_{t0} \cdot \pmb{k}_{ei} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,c}
         ) \cdot \pmb{p}_{ji}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
         \tag{4.4}
     \end{align*}
 

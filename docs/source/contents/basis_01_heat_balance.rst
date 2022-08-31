@@ -159,7 +159,7 @@
 
 :math:`h_{s,i,j}` : 境界 |j| の室内側総合熱伝達率, W / |m2| K
 
-:math:`\theta_{s,ei,j,n}` : ステップ |n| における境界 |j| の等価温度, ℃
+:math:`\theta_{s,ei,j,n}` : ステップ |n| における境界 |j| の等価室温, ℃
 
 である。
 
@@ -169,7 +169,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{s,ei,n} - \pmb{\theta}_{s,n} )
+        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{ei,n} - \pmb{\theta}_{s,n} )
         \tag{8}
     \end{align*}
 
@@ -177,12 +177,12 @@
 
 :math:`\pmb{h}_{s,i}` : :math:`h_{s,i,j}` を要素にもつ :math:`J \times J` の対角化行列, W / |m2| K
 
-:math:`\pmb{\theta}_{s,ei,n}` : :math:`\theta_{s,ei,j,m}` を要素にもつ :math:`J \times 1` の縦行列, ℃
+:math:`\pmb{\theta}_{ei,n}` : :math:`\theta_{s,ei,j,m}` を要素にもつ :math:`J \times 1` の縦行列, ℃
 
 である。
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-3) 等価温度
+3) 等価室温
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 境界の表面における熱流を対流・放射・日射熱取得・放射空調からの熱取得に分けて記述すると次式となる。
@@ -231,7 +231,7 @@
         \tag{7}
     \end{align*}
 
-ステップ |n| における境界 |j| の等価温度 :math:`\theta_{s,ei,j,n}` は式(10)のように表される。
+ステップ |n| における境界 |j| の等価室温 :math:`\theta_{s,ei,j,n}` は式(10)のように表される。
 
 .. math::
     :nowrap:
@@ -251,8 +251,8 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{\theta}_{s,ei,n} = \pmb{h}_{s,i}^{-1} \cdot
-        ( \pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n} + \pmb{h}_{s,r} \cdot \pmb{MRT}_{n}
+        \pmb{\theta}_{ei,n} = \pmb{h}_{s,i}^{-1} \cdot
+        ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n} + \pmb{h}_{s,r} \cdot \pmb{MRT}_{n}
         + \pmb{q}_{s,sol,n} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{r}_{RS,n} )
         \tag{11}
     \end{align*}
@@ -265,7 +265,7 @@
 
 :math:`\pmb{h}_{s,i}` : :math:`h_{s,i,j}` を要素にもつ :math:`J \times J` の対角化行列, W / |m2| K
 
-:math:`\pmb{p}` : :math:`p_{j,i}` を要素にもつ :math:`J \times I` の行列
+:math:`\pmb{p}_{ji}` : :math:`p_{j,i}` を要素にもつ :math:`J \times I` の行列
 
 :math:`\pmb{\theta}_{r,n}` : :math:`\theta'_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列, ℃
 
@@ -303,7 +303,7 @@
         \vdots \\
         \theta_{r,I-1}
         \end{pmatrix} =
-        \pmb{p} \cdot \pmb{\theta}_r
+        \pmb{p}_{ji} \cdot \pmb{\theta}_r
     \end{align*}
 
 の関係を用いて、 :math:`I \times 1` の要素を :math:`J \times 1` の要素に変換している。
@@ -384,7 +384,7 @@
 
     \begin{align*}
         \pmb{\theta}_{rear,n}
-        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{s,ei,n}
+        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{ei,n}
         + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n}
         + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n}
         \tag{13}
@@ -394,7 +394,7 @@
 
 :math:`\pmb{k}_{s,ei}` : :math:`k_{s,ei,j,j^*}` を要素にもつ :math:`J \times J` の行列
 
-:math:`\pmb{k}_{o,eqv}` : :math:`k_{o,eqv,j}` を要素にもつ :math:`J \times 1` の縦行列
+:math:`\pmb{k}_{o,eqv}` : :math:`k_{o,eqv,j}` を要素にもつ :math:`J \times I` の縦行列
 
 :math:`\pmb{k}_{s,r}` : :math:`k_{s,r,j,i}` を要素にもつ :math:`J \times I` の行列
 
@@ -435,7 +435,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n}
+        \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n}
     \end{align*}
 
 となる。ここで、
@@ -450,10 +450,10 @@
 
     \begin{align*}
         \begin{split}
-            \pmb{\theta}_{s,ei,n}
+            \pmb{\theta}_{ei,n}
             &= \pmb{h}_{s,i}^{-1} \cdot
-            ( \pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n}
-            + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
+            ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n}
+            + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
             &+ \pmb{q}_{s,sol,n}
             + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n}
             )
@@ -482,7 +482,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{s,ei,n} - \pmb{\theta}_{s,n} )
+        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{ei,n} - \pmb{\theta}_{s,n} )
         \tag{8}
     \end{align*}
 
@@ -491,7 +491,7 @@
 
     \begin{align*}
         \pmb{\theta}_{s,rear,n}
-        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{s,ei,n}
+        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{ei,n}
         + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n}
         + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n}
         \tag{13}
@@ -502,10 +502,10 @@
 
     \begin{align*}
         \begin{split}
-            \pmb{\theta}_{s,ei,n}
+            \pmb{\theta}_{ei,n}
             &= \pmb{h}_{s,i}^{-1} \cdot
-            ( \pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n}
-            + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
+            ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n}
+            + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
             &+ \pmb{q}_{s,sol,n}
             + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n}
             )
@@ -528,21 +528,21 @@
             &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{s,ei,n+1} - \pmb{\theta}_{s,n+1} ) \\
             &+ \pmb{\phi}_{t0} \cdot (\pmb{k}_{s,ei} \cdot \pmb{\theta}_{s,ei,n+1} + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n+1}) \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
-            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n+1} \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
-            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} \\
+            &+ \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1} \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} \\
@@ -562,12 +562,12 @@
     \begin{align*}
         \begin{split}
             & (\pmb{I}
-            - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt}
+            - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
             + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}
-            - \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt}
+            - \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
             ) \cdot \pmb{\theta}_{s,n+1} \\
-            &= (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}
+            &= (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
             + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
             ) \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n+1}
@@ -592,8 +592,8 @@
         \pmb{f}_{AX}
         = \pmb{I}
         + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}
-        - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt}
-        - \pmb{\phi}_{t0} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,ei} \cdot \pmb{p} \cdot \pmb{f}_{mrt}
+        - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+        - \pmb{\phi}_{t0} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,ei} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
         \tag{18}
     \end{align*}
 
@@ -601,8 +601,8 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{f}_{FIA} = (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}
+        \pmb{f}_{FIA} = (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
         + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
         \tag{19}
     \end{align*}
@@ -774,7 +774,7 @@
     \begin{align*}
         \begin{split}
             \pmb{C}_{rm} \cdot \frac{d \pmb{\theta}_{r,n}}{d t}
-            & = \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{\theta}_{s,n} - \pmb{p} \cdot \pmb{\theta}_{r,n}) \\
+            & = \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{\theta}_{s,n} - \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n}) \\
             & + c_a \cdot \rho_a \cdot \pmb{V}_{vent,out,n} \cdot (\pmb{\theta}_{o,n} - \pmb{\theta}_{r,n})
             + c_a \cdot \rho_a \cdot \pmb{V}_{vent,int,n} \cdot \pmb{\theta}_{r,n} \\
             & + \pmb{H}_n
@@ -822,7 +822,7 @@
         \vdots \\
         q_{s,bdr,J-1}
         \end{pmatrix} =
-        \pmb{p}^T \cdot \pmb{q}_{s,bdr}
+        \pmb{p}_{ji}^T \cdot \pmb{q}_{s,bdr}
     \end{align*}
 
 の関係を用いて、 :math:`J \times 1` の要素を :math:`I \times 1` の要素に変換している。
@@ -852,7 +852,7 @@
     \begin{align*}
         \begin{split}
             &\pmb{C}_{rm} \frac{\pmb{\theta}_{r,n+1} - \pmb{\theta}_{r,n}}{\Delta t} \\
-            & = \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{\theta}_{s,n+1} - \pmb{p} \cdot \pmb{\theta}_{r,n+1}) \\
+            & = \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{\theta}_{s,n+1} - \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1}) \\
             & + c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,out,n} \cdot (\pmb{\theta}_{o,n+1} - \pmb{\theta}_{r,n+1})
             + c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,int,n} \cdot \pmb{\theta}_{r,n+1} \\
             & + \hat{\pmb{H}}_n
@@ -948,13 +948,13 @@
     \begin{align*}
         \begin{split}
             &\pmb{C}_{rm} \frac{\pmb{\theta}_{r,n+1} - \pmb{\theta}_{r,n}}{\Delta t} \\
-            &= \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot
+            &= \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot
             (
             \pmb{f}_{WSR} \cdot \pmb{\theta}_{r,n+1}
             + \pmb{f}_{WSC,n+1}
             + \pmb{f}_{WSB} \cdot \pmb{L}_{RS,n+1} \\
             &+ \pmb{f}_{WSV,n+1}
-            - \pmb{p} \cdot \pmb{\theta}_{r,n+1}
+            - \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1}
             ) \\
             &+ c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,out,n} \cdot (\pmb{\theta}_{o,n+1} - \pmb{\theta}_{r,n+1}) \\
             &+ c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,int,n} \cdot \pmb{\theta}_{r,n+1} \\
@@ -984,18 +984,18 @@
     \begin{align*}
         \begin{split}
             & \pmb{C}_{rm} \cdot \frac{1}{\Delta t} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{p} - \pmb{f}_{WSR}) \cdot \pmb{\theta}_{r,n+1} \\
+            &+ \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{p}_{ji} - \pmb{f}_{WSR}) \cdot \pmb{\theta}_{r,n+1} \\
             & + c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,out,n} \cdot \pmb{\theta}_{r,n+1}
             - c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,int,n} \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{G}_{sh,frt} \cdot ( \pmb{C}_{sh,frt} + \Delta t \cdot \pmb{G}_{sh,frt})^{-1} \cdot \pmb{C}_{sh,frt} \cdot \pmb{\theta}_{r,n+1} \\
             & = \pmb{C}_{rm} \cdot \frac{1}{\Delta t} \cdot \pmb{\theta}_{r,n} \\
-            & + \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{f}_{WSC,n+1} + \pmb{f}_{WSV,n+1}) \\
+            & + \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{f}_{WSC,n+1} + \pmb{f}_{WSV,n+1}) \\
             & + c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,out,n} \cdot \pmb{\theta}_{o,n+1} \\
             & + \hat{\pmb{H}}_n \\
             & + \pmb{G}_{sh,frt} \cdot (\pmb{C}_{sh,frt} + \Delta t \cdot \pmb{G}_{sh,frt})^{-1}
             \cdot ( \pmb{C}_{sh,frt} \cdot \pmb{\theta}_{frt,n} + \Delta t \cdot \hat{\pmb{Q}}_{sol,frt,n+1} ) \\
             & + \hat{\pmb{L}}_{CS,n} \\
-            & + \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot \pmb{f}_{WSB} \cdot \hat{\pmb{L}}_{RS,n} + \pmb{\beta} \cdot \hat{\pmb{L}}_{RS,n} \\
+            & + \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot \pmb{f}_{WSB} \cdot \hat{\pmb{L}}_{RS,n} + \pmb{\beta} \cdot \hat{\pmb{L}}_{RS,n} \\
         \end{split}
         \tag{37}
     \end{align*}
@@ -1011,7 +1011,7 @@
         \begin{split}
             \pmb{f}_{BRM,n}
             & = \pmb{C}_{rm} \cdot \frac{1}{\Delta t}
-            + \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{p} - \pmb{f}_{WSR}) \\
+            + \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{p}_{ji} - \pmb{f}_{WSR}) \\
             &+ c_a \cdot \rho_a \cdot ( \hat{\pmb{V}}_{vent,out,n} - \hat{\pmb{V}}_{vent,int,n} ) \\
             &+ \pmb{G}_{sh,frt} \cdot (\pmb{C}_{sh,frt} + \Delta t \cdot \pmb{G}_{sh,frt})^{-1} \cdot \pmb{C}_{sh,frt}
         \end{split}
@@ -1025,7 +1025,7 @@
         \begin{split}
             \pmb{f}_{BRC,n}
             & = \pmb{C}_{rm} \cdot \frac{1}{\Delta t} \cdot \pmb{\theta}_{r,n}
-            + \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{f}_{WSC,n+1} + \pmb{f}_{WSV,n+1}) \\
+            + \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot (\pmb{f}_{WSC,n+1} + \pmb{f}_{WSV,n+1}) \\
             & + c_a \cdot \rho_a \cdot \hat{\pmb{V}}_{vent,out,n} \cdot \pmb{\theta}_{o,n+1} + \hat{\pmb{H}}_n \\
             & + \pmb{G}_{sh,frt} \cdot (\pmb{C}_{sh,frt} + \Delta t \cdot \pmb{G}_{sh,frt})^{-1}
             \cdot ( \pmb{C}_{sh,frt} \cdot \pmb{\theta}_{frt,n} + \Delta t \cdot \hat{\pmb{Q}}_{sol,frt,n+1} )
@@ -1037,7 +1037,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{f}_{BRL} = \pmb{p}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot \pmb{f}_{WSB} + \pmb{\beta}
+        \pmb{f}_{BRL} = \pmb{p}_{ji}^{T} \cdot \pmb{h}_{s,c} \cdot \pmb{A}_{s} \cdot \pmb{f}_{WSB} + \pmb{\beta}
         \tag{40}
     \end{align*}
 
