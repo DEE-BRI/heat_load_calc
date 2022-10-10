@@ -1,15 +1,9 @@
 ************************************************************************************************************************
-評価方法
+評価方法の根拠
 ************************************************************************************************************************
 
 .. toctree::
 
-    ./eval_01_sequence
-    ./eval_02_rooms
-    ./eval_10_region
-    ./eval_11_solar_position
-    ./eval_12_schedule
-    ./eval_13_room
-    ./eval_14_furniture
-    ./eval_16_shape_factor
-    ./eval_17_direction
+   ./04_01_basis_heat_balance
+   ./04_02_basis_humidity_balance
+   ./04_14_basis_furniture
