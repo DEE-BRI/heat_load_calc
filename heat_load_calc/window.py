@@ -2,7 +2,7 @@ from enum import Enum, auto
 from typing import Optional, Tuple
 from math import sin, cos, pi
 
-class Window():
+class Window:
     """窓を表すクラス
     """
 
@@ -166,7 +166,7 @@ class Window():
             境界 j の窓の面積に対するグレージングの面積の比, -
         """
 
-        if r_a_w_g_j == None:
+        if r_a_w_g_j is None:
             return {
                 Window.FlameType.RESIN: 0.72,
                 Window.FlameType.WOOD: 0.72,
