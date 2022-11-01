@@ -1,6 +1,4 @@
 from enum import Enum, auto
-from lib2to3.pgen2.token import OP
-from optparse import Option
 from typing import Optional, Tuple
 from math import sin, cos, pi
 
