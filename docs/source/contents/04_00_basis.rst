@@ -4,6 +4,6 @@
 
 .. toctree::
 
-   ./04_01_basis_heat_balance
-   ./04_02_basis_humidity_balance
+   ./04_11_basis_heat_balance
+   ./04_12_basis_humidity_balance
    ./04_14_basis_furniture
