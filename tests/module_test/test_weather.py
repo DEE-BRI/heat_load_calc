@@ -3,7 +3,7 @@ import os
 
 from heat_load_calc.weather import Weather
 from heat_load_calc.interval import Interval
-from heat_load_calc.region import Region
+
 
 class TestWeather(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestWeather(unittest.TestCase):
     def test_weather_values_solar_position_ees_m15(self):
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.M15, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.M15, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス
@@ -41,7 +41,7 @@ class TestWeather(unittest.TestCase):
     def test_weather_values_solar_position_ees_m30(self):
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.M30, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.M30, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス
@@ -70,7 +70,7 @@ class TestWeather(unittest.TestCase):
     def test_weather_values_solar_position_ees_1h(self):
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.H1, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.H1, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス
@@ -193,7 +193,7 @@ class TestWeather(unittest.TestCase):
         """
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.M15, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.M15, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス
@@ -251,7 +251,7 @@ class TestWeather(unittest.TestCase):
         """
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.M30, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.M30, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス
@@ -309,7 +309,7 @@ class TestWeather(unittest.TestCase):
         """
 
         # データの取得
-        w = Weather.make_weather(method="ees", itv=Interval.H1, region=Region(1))
+        w = Weather.make_weather(method="ees", itv=Interval.H1, region=1)
         d = w.get_weather_as_pandas_data_frame()
 
         # 確認する時刻のタイムスタンプとインデックス

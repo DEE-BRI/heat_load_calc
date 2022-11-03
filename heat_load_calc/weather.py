@@ -2,7 +2,7 @@
 import pandas as pd
 import os
 import logging
-from typing import Tuple, Optional
+from typing import Tuple
 import math
 
 from heat_load_calc import solar_position
@@ -49,7 +49,7 @@ class Weather:
         self._itv = itv
 
     @classmethod
-    def make_weather(cls, method: str, itv: Interval = Interval.M15, file_path: str = "", region: Optional[Region] = None):
+    def make_weather(cls, method: str, itv: Interval = Interval.M15, file_path: str = "", region: int = None):
 
         if method == 'file':
 
@@ -61,7 +61,7 @@ class Weather:
 
             logger.info('make weather data based on the EES region')
 
-            return cls._make_weather_ees(rgn=region, itv=itv)
+            return cls._make_weather_ees(rgn=Region(region), itv=itv)
 
         else:
 
