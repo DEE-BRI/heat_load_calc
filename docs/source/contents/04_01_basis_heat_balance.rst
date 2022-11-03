@@ -32,7 +32,7 @@
     :nowrap:
 
     \begin{align*}
-        \theta'_{s,a,j,m,n+1} = q_{s,j,n} \cdot \phi_{a1,j,m} + r_{j,m} \cdot \theta'_{s,a,j,m,n}
+        \theta'_{s,a,j,m,n+1} = \phi_{a1,j,m} \cdot q_{s,j,n} + r_{j,m} \cdot \theta'_{s,a,j,m,n}
         \tag{2}
     \end{align*}
 
@@ -40,7 +40,7 @@
     :nowrap:
 
     \begin{align*}
-        \theta'_{s,t,j,m,n+1} = \theta_{s,rear,j,n} \cdot \phi_{t1,j,m} + r_{j,m} \cdot \theta'_{s,t,j,m,n}
+        \theta'_{s,t,j,m,n+1} = \phi_{t1,j,m} \cdot \theta_{s,rear,j,n} + r_{j,m} \cdot \theta'_{s,t,j,m,n}
         \tag{3}
     \end{align*}
 
@@ -151,7 +151,7 @@
     :nowrap:
 
     \begin{align*}
-        q_{s,j,n} = h_{s,i,j} \cdot ( \theta_{s,ei,j,n} - \theta_{s,j,n} )
+        q_{s,j,n} = h_{s,i,j} \cdot ( \theta_{er,j,n} - \theta_{s,j,n} )
         \tag{7}
     \end{align*}
 
@@ -159,7 +159,7 @@
 
 :math:`h_{s,i,j}` : 境界 |j| の室内側総合熱伝達率, W / |m2| K
 
-:math:`\theta_{s,ei,j,n}` : ステップ |n| における境界 |j| の等価室温, ℃
+:math:`\theta_{er,j,n}` : ステップ |n| における境界 |j| の等価室温, ℃
 
 である。
 
@@ -169,7 +169,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{ei,n} - \pmb{\theta}_{s,n} )
+        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n} - \pmb{\theta}_{s,n} )
         \tag{8}
     \end{align*}
 
@@ -177,7 +177,7 @@
 
 :math:`\pmb{h}_{s,i}` : :math:`h_{s,i,j}` を要素にもつ :math:`J \times J` の対角化行列, W / |m2| K
 
-:math:`\pmb{\theta}_{ei,n}` : :math:`\theta_{s,ei,j,m}` を要素にもつ :math:`J \times 1` の縦行列, ℃
+:math:`\pmb{\theta}_{er,n}` : :math:`\theta_{er,j,m}` を要素にもつ :math:`J \times 1` の縦行列, ℃
 
 である。
 
@@ -194,7 +194,7 @@
         \begin{split}
             q_{s,j,n}
             &= h_{s,c,j} \cdot (\theta_{r,j,n} - \theta_{s,j,n})
-            + h_{s,r,j} \cdot (MRT_{j,n} - \theta_{s,j,n}) \\
+            + h_{s,r,j} \cdot (\theta_{MRT,j,n} - \theta_{s,j,n}) \\
             &+ q_{s,sol,j,n}
             + \frac{ f_{flr,j,i} \cdot L_{RS,i,n} \cdot (1 - \beta_i) }{A_{s,j}}
         \end{split}
@@ -209,7 +209,7 @@
 
 :math:`\theta_{r,j,n}` : ステップ |n| における境界 |j| が接する室の空気温度, ℃
 
-:math:`MRT_{j,n}` : ステップ |n| における境界 |j| の平均放射温度, ℃
+:math:`\theta_{MRT_j,n}` : ステップ |n| における境界 |j| の平均放射温度, ℃
 
 :math:`q_{s,sol,j,n}` : ステップ |n| における境界 |j| の透過日射吸収熱量, W / |m2|
 
@@ -227,7 +227,7 @@
     :nowrap:
 
     \begin{align*}
-        q_{s,j,n} = h_{s,i,j} \cdot ( \theta_{s,ei,j,n} - \theta_{s,j,n} )
+        q_{s,j,n} = h_{s,i,j} \cdot ( \theta_{er,j,n} - \theta_{s,j,n} )
         \tag{7}
     \end{align*}
 
@@ -237,9 +237,9 @@
     :nowrap:
 
     \begin{align*}
-        \theta_{s,ei,j,n}
+        \theta_{er,j,n}
         = \frac{h_{s,c,j}}{h_{s,i,j}} \cdot \theta_{r,j,n}
-        + \frac{h_{s,r,j}}{h_{s,i,j}} \cdot MRT_{j,n}
+        + \frac{h_{s,r,j}}{h_{s,i,j}} \cdot \theta{MRT_j,n}
         + \frac{q_{s,sol,j,n}}{h_{s,i,j}}
         + \frac{f_{flr,j,i} \cdot L_{RS,i,n} \cdot (1 - \beta_i) }{A_{s,j} \cdot h_{s,i,j}}
         \tag{10}
@@ -251,8 +251,8 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{\theta}_{ei,n} = \pmb{h}_{s,i}^{-1} \cdot
-        ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n} + \pmb{h}_{s,r} \cdot \pmb{MRT}_{n}
+        \pmb{\theta}_{er,n} = \pmb{h}_{s,i}^{-1} \cdot
+        ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n} + \pmb{h}_{s,r} \cdot \pmb{\theta}_{MRT,n}
         + \pmb{q}_{s,sol,n} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{r}_{RS,n} )
         \tag{11}
     \end{align*}
@@ -269,7 +269,7 @@
 
 :math:`\pmb{\theta}_{r,n}` : :math:`\theta'_{r,i,n}` を要素にもつ :math:`I \times 1` の縦行列, ℃
 
-:math:`\pmb{MRT}_{n}` : :math:`MRT_{j,n}` を要素にもつ :math:`J \times 1` の縦行列, ℃
+:math:`\pmb{\theta}_{MRT,n}` : :math:`\theta_{MRT,j,n}` を要素にもつ :math:`J \times 1` の縦行列, ℃
 
 :math:`\pmb{q}_{s,sol,n}` : :math:`q_{s,sol,j}` を要素にもつ :math:`J \times 1` の縦行列, W / |m2|
 
@@ -328,12 +328,12 @@
             \theta_{s,rear,j,n}
             &=
             \begin{pmatrix}
-                k_{s,ei,j,0} & \ldots & k_{s,ei,j,J-1}
+                k_{s,er,j,0} & \ldots & k_{s,er,j,J-1}
             \end{pmatrix} \cdot
             \begin{pmatrix}
-                \theta_{s,ei,0,n} \\
+                \theta_{er,0,n} \\
                 \vdots \\
-                \theta_{s,ei,J-1,n}
+                \theta_{er,J-1,n}
             \end{pmatrix} \\
             &+
             \begin{pmatrix}
@@ -344,38 +344,38 @@
                 \vdots \\
                 \theta_{r,I-1,n}
             \end{pmatrix} \\
-            &+ k_{o,eqv,j} \cdot \theta_{o,eqv,j,n}
+            &+ k_{s,eo,j} \cdot \theta_{eo,j,n}
         \end{split}
         \tag{12}
     \end{align*}
 
 ここで、
 
-:math:`k_{s,ei,j,j^*}` : 境界 |j| の裏面温度に境界　|j*| の等価温度が与える影響
+:math:`k_{s,er,j,j^*}` : 境界 |j| の裏面温度に境界　|j*| の等価温度が与える影響
 
-:math:`k_{o,eqv,j}` : 境界 |j| の裏面温度に屋外側等価温度が与える影響
+:math:`k_{s,eo,j}` : 境界 |j| の裏面温度に屋外側等価温度が与える影響
 
 :math:`k_{s,r,j,i}` : 境界 |j| の裏面温度に室 |i| の空気温度が与える影響
 
-:math:`\theta_{o,eqv,j,n}` : ステップ |n| における境界 |j| の屋外側等価温度, ℃
+:math:`\theta_{eo,j,n}` : ステップ |n| における境界 |j| の屋外側等価温度, ℃
 
 である。
 
 例えば、外気温度の場合、
-:math:`k_{s,ei,j,0}` ～ :math:`k_{s,ei,j,J-1}` は :math:`0.0`、
+:math:`k_{s,er,j,0}` ～ :math:`k_{s,er,j,J-1}` は :math:`0.0`、
 :math:`k_{s,r,j,0}` ～ :math:`k_{s,r,j,I-1}` は :math:`0.0`、
-:math:`k_{o,eqv,j}` は :math:`1.0` である。
+:math:`k_{s,eo,j}` は :math:`1.0` である。
 
 外気温度と室内温度を按分する場合の例として例えば床下の場合は温度差係数 :math:`0.7` が採用されるが、
 その場合の床下に面する境界の室（表側：裏面側ではない）の空気温度を |i*| とすると、
-:math:`k_{s,ei,j,0}` ～ :math:`k_{s,ei,j,J-1}` は :math:`0.0`、
+:math:`k_{s,er,j,0}` ～ :math:`k_{s,er,j,J-1}` は :math:`0.0`、
 :math:`k_{s,r,j,i*}` は :math:`0.3` 、その他の :math:`k_{s,r,j,i}` は0.0、
-:math:`k_{o,eqv,j}` は :math:`0.7` である。
+:math:`k_{s,eo,j}` は :math:`0.7` である。
 
 間仕切り等、裏面が室の場合、
-:math:`k_{s,ei,j,0}` ～ :math:`k_{s,ei,j,J-1}` のどれかが :math:`1.0`,
+:math:`k_{s,er,j,0}` ～ :math:`k_{s,er,j,J-1}` のどれかが :math:`1.0`,
 :math:`k_{s,r,j,0}` ～ :math:`k_{s,r,j,I-1}` は :math:`0.0`、
-:math:`k_{o,eqv,j}` は :math:`0.0` である。
+:math:`k_{s,eo,j}` は :math:`0.0` である。
 
 これらの式を境界 :math:`0` ～ :math:`J-1` および :math:`0` ～ :math:`I-1` でベクトル表記をすると、次式となる。
 
@@ -383,45 +383,45 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{\theta}_{rear,n}
-        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{ei,n}
+        \pmb{\theta}_{s,rear,n}
+        = \pmb{k}_{s,er} \cdot \pmb{\theta}_{er,n}
         + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n}
-        + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n}
+        + \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n}
         \tag{13}
     \end{align*}
 
 ここで、
 
-:math:`\pmb{k}_{s,ei}` : :math:`k_{s,ei,j,j^*}` を要素にもつ :math:`J \times J` の行列
+:math:`\pmb{k}_{s,er}` : :math:`k_{s,er,j,j^*}` を要素にもつ :math:`J \times J` の行列
 
-:math:`\pmb{k}_{o,eqv}` : :math:`k_{o,eqv,j}` を要素にもつ :math:`J \times I` の縦行列
+:math:`\pmb{k}_{s,eo}` : :math:`k_{s,eo,j}` を要素にもつ :math:`J \times I` の縦行列
 
 :math:`\pmb{k}_{s,r}` : :math:`k_{s,r,j,i}` を要素にもつ :math:`J \times I` の行列
 
-:math:`\pmb{\theta}_{o,eqv,n}` : :math:`\theta_{o,eqv,j,n}` を要素にもつ :math:`J \times 1` の縦行列
+:math:`\pmb{\theta}_{eo,n}` : :math:`\theta_{eo,j,n}` を要素にもつ :math:`J \times 1` の縦行列
 
 である。
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-1) 平均放射温度と放射熱伝達率
+5) 平均放射温度と放射熱伝達率
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-ステップ |n| における境界 |j| の等価温度 :math:`\theta_{s,ei,j,n}` を求めるにあたり、放射のやりとりは、
+ステップ |n| における境界 |j| の等価室温 :math:`\theta_{er,j,n}` を求めるにあたり、放射のやりとりは、
 
 .. math::
     :nowrap:
 
     \begin{align*}
-        h_{s,r,j} \cdot MRT_{j,n}
+        h_{s,r,j} \cdot \theta_{MRT_j,n}
     \end{align*}
 
-で表されるが、ここで、 :math:`MRT_{j,n}` を室 |i| の微小球の温度で代表させると、平均放射温度 :math:`MRT` は室 |i| ごとに定められ、
+で表されるが、ここで、 :math:`\theta_{MRT_j,n}` を室 |i| の微小球の温度で代表させると、平均放射温度 :math:`MRT` は室 |i| ごとに定められ、
 
 .. math::
     :nowrap:
 
     \begin{align*}
-        MRT_{i,n} = \sum_{j=0}^{J-1}{f_{mrt,i,j}} \cdot \theta_{s,j,n}
+        \theta_{MRT_i,n} = \sum_{j=0}^{J-1}{f_{mrt,i,j}} \cdot \theta_{s,j,n}
         \tag{14}
     \end{align*}
 
@@ -450,7 +450,7 @@
 
     \begin{align*}
         \begin{split}
-            \pmb{\theta}_{ei,n}
+            \pmb{\theta}_{er,n}
             &= \pmb{h}_{s,i}^{-1} \cdot
             ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n}
             + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
@@ -482,7 +482,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{ei,n} - \pmb{\theta}_{s,n} )
+        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n} - \pmb{\theta}_{s,n} )
         \tag{8}
     \end{align*}
 
@@ -491,9 +491,9 @@
 
     \begin{align*}
         \pmb{\theta}_{s,rear,n}
-        = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{ei,n}
+        = \pmb{k}_{s,er} \cdot \pmb{\theta}_{er,n}
         + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n}
-        + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n}
+        + \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n}
         \tag{13}
     \end{align*}
 
@@ -502,7 +502,7 @@
 
     \begin{align*}
         \begin{split}
-            \pmb{\theta}_{ei,n}
+            \pmb{\theta}_{er,n}
             &= \pmb{h}_{s,i}^{-1} \cdot
             ( \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n}
             + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n} \\
@@ -525,28 +525,28 @@
             + \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}}
             + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{s,rear,n+1}
             + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
-            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{s,ei,n+1} - \pmb{\theta}_{s,n+1} ) \\
-            &+ \pmb{\phi}_{t0} \cdot (\pmb{k}_{s,ei} \cdot \pmb{\theta}_{s,ei,n+1} + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} + \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n+1}) \\
+            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n+1} - \pmb{\theta}_{s,n+1} ) \\
+            &+ \pmb{\phi}_{t0} \cdot (\pmb{k}_{s,er} \cdot \pmb{\theta}_{er,n+1} + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} + \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n+1}) \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
             &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n+1} \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
             &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1} \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{o,eqv} \cdot \pmb{\theta}_{o,eqv,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n+1} \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
         \end{split}
         \tag{16}
@@ -564,17 +564,17 @@
             & (\pmb{I}
             - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
             + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}
-            - \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+            - \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
             ) \cdot \pmb{\theta}_{s,n+1} \\
             &= (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
             + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
             ) \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n+1}
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1}
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{o,eqv} \cdot \theta_{o,eqv,n+1} \\
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1}
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \pmb{theta}_{eo,n+1} \\
             &+ (\pmb{\phi}_{a0} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta})
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta})
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta})
             ) \cdot \pmb{L}_{RS,n+1} \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
         \end{split}
@@ -593,7 +593,7 @@
         = \pmb{I}
         + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}
         - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
-        - \pmb{\phi}_{t0} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,ei} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+        - \pmb{\phi}_{t0} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,er} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
         \tag{18}
     \end{align*}
 
@@ -602,7 +602,7 @@
 
     \begin{align*}
         \pmb{f}_{FIA} = (\pmb{\phi}_{a0} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,c} \cdot \pmb{p}_{ji}
         + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
         \tag{19}
     \end{align*}
@@ -613,8 +613,8 @@
     \begin{align*}
         \pmb{f}_{CRX,n+1}
         = \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n+1}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{o,eqv} \cdot \theta_{o,eqv,n+1}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{q}_{s,sol,n+1}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \theta_{eo,eqv,n+1}
         \tag{20}
     \end{align*}
 
@@ -624,7 +624,7 @@
     \begin{align*}
         \pmb{f}_{FLB} = (
         \pmb{\phi}_{a0} \cdot \pmb{A}_{s}^{-1}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,ei} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{h}_{s,i}^{-1}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{A}_{s}^{-1} \cdot \pmb{h}_{s,i}^{-1}
         ) \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{f}_{flr}
         \tag{21}
     \end{align*}
@@ -1055,7 +1055,7 @@
 のように表される。
 
 ------------------------------------------------------------------------------------------------------------------------
-1. 作用温度と室温
+3. 作用温度と室温
 ------------------------------------------------------------------------------------------------------------------------
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1263,8 +1263,140 @@
 対流空調の放熱量 :math:`\hat{\pmb{L}}_{RS,n}` 及び放射空調の放熱量 :math:`\hat{\pmb{L}}_{RS,n}` のバランス式となっているため、
 3つの変数のうち、どれか1つを未知数と置くことで、負荷または作用温度を計算することができる。
 
+なお、室温を指定して負荷計算を行う場合は、
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        k_{c,i,n+1} = 1.0
+    \end{align*}
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        k_{r,i,n+1} = 0.0
+    \end{align*}
+
+とおけば良い。
+
 ------------------------------------------------------------------------------------------------------------------------
-5. 具体的な解法の手順
+5. 地盤の計算
+------------------------------------------------------------------------------------------------------------------------
+
+地盤の熱容量は大きいため、建物全体の計算よりも助走時間を長く（例えば最低でも1年など）とらなければならない。
+このような長い時間の助走計算を建物全体で行うと計算時間が非常にかかってしまうため、最初に地盤のみである程度長い時間の助走計算を行い、その後、短い時間で建物全体の助走計算を行うことにする。
+地盤のみで助走計算を行う場合、室内側の空気温度は建物全体の熱バランスを解いていないため分からない。
+そこで、地盤のみの助走計算を行うにあたって室内側の空気温度を外気温度に仮定して解くことにする。
+
+境界表面温度の式(4)、式(5)及び式(6)を再掲する。
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}_{s,n+1} = \pmb{\phi}_{a0} \cdot \pmb{q}_{s,n+1} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}}
+        + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{s,rear,n+1} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
+        \tag{4}
+    \end{align*}
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}'_{s,a,m,n+1} = \pmb{\phi}_{a1,m} \cdot \pmb{q}_{s,n} + \pmb{r}_{m} \cdot \pmb{\theta}'_{s,a,m,n}
+        \tag{5}
+    \end{align*}
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}'_{s,t,m,n+1}
+        = \pmb{\phi}_{t1,m} \cdot \pmb{\theta}_{s,rear,n} + \pmb{r}_{m} \cdot \pmb{\theta}'_{s,t,m,n}
+        \tag{6}
+    \end{align*}
+
+表面熱流の式(8)を再掲する。
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{q}_{s,n} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n} - \pmb{\theta}_{s,n} )
+        \tag{8}
+    \end{align*}
+
+ここで、式(8)の表面熱流の式を1ステップ進めると、
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{q}_{s,n+1} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n+1} - \pmb{\theta}_{s,n+1} )
+        \tag{54}
+    \end{align*}
+
+となる。この式を式(4)に代入すると、
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}_{s,n+1} = \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n+1} - \pmb{\theta}_{s,n+1} )
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}}
+        + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{s,rear,n+1}
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
+        \tag{55}
+    \end{align*}
+
+となり、 :math:`\pmb{\theta}_{s,n+1}` について解くと、
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}_{s,n+1} = (\pmb{I} + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}) ^ {-1} \cdot
+        ( \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{er,n+1}
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}}
+        + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{s,rear,n+1}
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
+        )
+        \tag{56}
+    \end{align*}
+
+
+となる。ここで、室内側の等価室温である :math:`\pmb{\theta}_{er,n+1}` は外気温度で代用するため、 :math:`\pmb{\theta}_{o,n+1}` と書き換えると、
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{\theta}_{s,n+1} = (\pmb{I} + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}) ^ {-1} \cdot
+        ( \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{o,n+1}
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}}
+        + \pmb{\phi}_{t0} \cdot \pmb{\theta}_{s,rear,n+1}
+        + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}}
+        )
+        \tag{57}
+    \end{align*}
+
+であり、式(54)は
+
+.. math::
+    :nowrap:
+
+    \begin{align*}
+        \pmb{q}_{s,n+1} = \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{o,n+1} - \pmb{\theta}_{s,n+1} )
+        \tag{58}
+    \end{align*}
+
+となる。
+
+
+------------------------------------------------------------------------------------------------------------------------
+6. 具体的な解法の手順
 ------------------------------------------------------------------------------------------------------------------------
 
 これまで定式化した数式における記号は以下の3種類に分類される。

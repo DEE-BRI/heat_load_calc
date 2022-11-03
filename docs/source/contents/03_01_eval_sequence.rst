@@ -858,7 +858,7 @@
             f_{FLB,j,i,n+1}
             &= \frac{ \phi_{A0,j} \cdot ( 1 - \hat{\beta}_{i,n} ) \cdot f_{flr,i,j,n+1} }{ A_{s,j} } \\
             &+ \phi_{T0,j} \cdot \sum_{j*=0}^{J-1}{
-            \frac{ k_{EI,j,j*}  \cdot ( 1 - \hat{\beta}_{i,n} ) \cdot f_{flr,i,j*,n+1} }{ A_{s,j*} \cdot ( h_{s,c,j*} + h_{s,r,j*} ) }
+            \frac{ k_{s,er,j,j*}  \cdot ( 1 - \hat{\beta}_{i,n} ) \cdot f_{flr,i,j*,n+1} }{ A_{s,j*} \cdot ( h_{s,c,j*} + h_{s,r,j*} ) }
             }
         \end{split}
         \tag{2.12}
@@ -1131,7 +1131,7 @@
     :nowrap:
 
     \begin{align*}
-        \pmb{\theta}_{rear,n} = \pmb{k}_{ei} \cdot \pmb{\theta}_{ei,n} + \pmb{k}_{eo} \cdot \pmb{\theta}_{o,eqv,n} + \pmb{k}_{s,r} \theta \pmb{\theta}_{r,n}
+        \pmb{\theta}_{rear,n} = \pmb{k}_{s,ei} \cdot \pmb{\theta}_{ei,n} + \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n} + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n}
         \tag{2.32}
     \end{align*}
 
@@ -1163,7 +1163,7 @@
     :nowrap:
 
     \begin{align*}
-        q_{s,j,n+1} = ( h_{s,c,j} + h_{s,r,j} ) \cdot ( \theta_{o,n+1} - \theta_{s,j,n+1} ) \tag{3.1}
+        q_{s,j,n+1} = h_{s,i,j} \cdot ( \theta_{o,n+1} - \theta_{s,j,n+1} ) \tag{3.1}
     \end{align*}
 
 ステップ |n+1| における境界 |j| の表面温度 :math:`\theta_{s,j,n+1}` は、式(3.2)により表される。
@@ -1174,7 +1174,7 @@
     \begin{align*}
         \begin{split}
             \theta_{s,j,n+1}
-            &= \left( \phi_{a0,j} \cdot h_{i,j} \cdot \theta_{o,n+1} + \phi_{t0,j} \cdot \theta_{dstrb,j,n+1} \right. \\
+            &= \left( \phi_{a0,j} \cdot h_{s,i,j} \cdot \theta_{o,n+1} + \phi_{t0,j} \cdot k_{eo,j} \cdot \theta_{eo,,j,n+1} \right. \\
             &+ \left. \sum_{m=0}^{M-1}{\theta'_{s,a,j,m,n+1}} + \sum_{m=0}^{M-1}{\theta'_{s,t,j,m,n+1}} \right)
             \cdot \frac{1}{1 + \phi_{a0,j} \cdot (h_{s,c,j} + h_{s,r,j}) }
         \end{split}
@@ -1189,7 +1189,7 @@
     :nowrap:
 
     \begin{align*}
-        \theta'_{s,a,j,m,n+1} = q_{s,j,n} \cdot \phi_{a1,j,m} + r_{j,m} \cdot \theta'_{s,a,j,m,n}
+        \theta'_{s,a,j,m,n+1} = \phi_{a1,j,m} \cdot q_{s,j,n} + r_{j,m} \cdot \theta'_{s,a,j,m,n}
         \tag{3.3}
     \end{align*}
 
@@ -1197,7 +1197,7 @@
     :nowrap:
 
     \begin{align*}
-        \theta'_{s,t,j,m,n+1} = \theta_{dstrb,j,n} \cdot \phi_{t1,j,m} + r_{j,m} \cdot \theta'_{s,t,j,m,n}
+        \theta'_{s,t,j,m,n+1} = \phi_{t1,j,m} \cdot k_{eo,j} \cdot \theta_{eo,,j,n+1} + r_{j,m} \cdot \theta'_{s,t,j,m,n}
         \tag{3.4}
     \end{align*}
 
@@ -1233,8 +1233,8 @@
     \begin{align*}
         \pmb{f}_{CRX,n}
         = \pmb{\phi}_{a0} \cdot \pmb{q}_{s,sol,n}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{ei} \cdot (\pmb{h}_{c} + \pmb{h}_{r})^{-1} \cdot \pmb{q}_{s,sol,n}
-        + \pmb{\phi}_{t0} \cdot \pmb{k}_{eo} \cdot \pmb{\theta}_{o,eqv,n}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot (\pmb{h}_{c} + \pmb{h}_{r})^{-1} \cdot \pmb{q}_{s,sol,n}
+        + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \pmb{\theta}_{o,eqv,n}
         \tag{4.3}
     \end{align*}
 
@@ -1246,7 +1246,7 @@
     \begin{align*}
         \pmb{f}_{FIA} = (
             \pmb{\phi}_{a0} \cdot \pmb{h}_{s,c}
-            + \pmb{\phi}_{t0} \cdot \pmb{k}_{ei} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,c}
+            + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,c}
         ) \cdot \pmb{p}_{ji}
         + \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r}
         \tag{4.4}
@@ -1263,7 +1263,7 @@
             &= \pmb{I} \\
             &+ \pmb{\phi}_{a0} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r}) \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \\
-            &- \pmb{\phi}_{t0} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{ei} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+            &- \pmb{\phi}_{t0} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,er} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
         \end{split}
         \tag{4.5}
     \end{align*}
@@ -1274,7 +1274,7 @@
     :nowrap:
 
     \begin{align*}
-        \theta_{dstrb,j,n} = \theta_{o,eqv,j,n} \cdot k_{eo,j}
+        \theta_{dstrb,j,n} = \theta_{eo,j,n} \cdot k_{s,eo,j}
         \tag{4.6}
     \end{align*}
 
