@@ -528,10 +528,10 @@
             &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot ( \pmb{\theta}_{er,n+1} - \pmb{\theta}_{s,n+1} ) \\
             &+ \pmb{\phi}_{t0} \cdot (\pmb{k}_{s,er} \cdot \pmb{\theta}_{er,n+1} + \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} + \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n+1}) \\
             &+ \sum_{m=1}^{M}{\pmb{\theta}'_{s,a,m,n+1}} + \sum_{m=1}^{M}{\pmb{\theta}'_{s,t,m,n+1}} \\
-            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &= \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i} \cdot \pmb{\theta}_{s,n+1} \\
-            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
+            &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot (\pmb{h}_{s,c} \cdot \pmb{p}_{ji} \cdot \pmb{\theta}_{r,n+1} + \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \cdot \pmb{\theta}_{s,n+1} \\
             &+ \pmb{q}_{s,sol,n+1} + \pmb{A}_{s}^{-1} \cdot \pmb{f}_{flr} \cdot (\pmb{I} - \pmb{\beta}) \cdot \pmb{L}_{RS,n+1}) \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,r} \cdot \pmb{\theta}_{r,n+1} \\
             &+ \pmb{\phi}_{t0} \cdot \pmb{k}_{s,eo} \cdot \pmb{\theta}_{eo,n+1} \\
@@ -593,7 +593,7 @@
         = \pmb{I}
         + \pmb{\phi}_{a0} \cdot \pmb{h}_{s,i}
         - \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
-        - \pmb{\phi}_{t0} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,er} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+        - \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot \pmb{h}_{s,i}^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
         \tag{18}
     \end{align*}
 

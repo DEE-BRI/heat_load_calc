@@ -1263,7 +1263,7 @@
             &= \pmb{I} \\
             &+ \pmb{\phi}_{a0} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r}) \\
             &- \pmb{\phi}_{a0} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt} \\
-            &- \pmb{\phi}_{t0} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{k}_{s,er} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
+            &- \pmb{\phi}_{t0} \cdot \pmb{k}_{s,er} \cdot (\pmb{h}_{s,c} + \pmb{h}_{s,r})^{-1} \cdot \pmb{h}_{s,r} \cdot \pmb{p}_{ji} \cdot \pmb{f}_{mrt}
         \end{split}
         \tag{4.5}
     \end{align*}
